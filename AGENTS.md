@@ -2,15 +2,14 @@
 
 ## Project Purpose
 
-This repository contains a logistics-oriented application for operational data processing, Excel/CSV transformation, time-and-motion analysis, productivity measurement, database-backed workflows, and predictive modeling.
+This repository serves as a reusable base for agent-assisted software work across different project types.
 
 Priorities:
 
 - Correctness.
 - Maintainability.
-- Data quality.
-- Operational usability.
-- Database simplicity.
+- Clarity.
+- Reusability.
 - Security.
 - Low token usage.
 
