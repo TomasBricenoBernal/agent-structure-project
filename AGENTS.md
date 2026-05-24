@@ -91,15 +91,21 @@ Required task files for non-trivial work:
 
 - `task.md`
 - `modified_files.md`
+- `qa.md`
 
 Optional task files:
 
 - `handoff.md`
 - `plan.md`
-- `qa.md`
 - `notes.md`
 
 Create optional files only when needed.
+
+Review task rule:
+
+- QA may create a dedicated review task after reviewing an implementation task or a feature checkpoint.
+- Use a dedicated review task when the follow-up review needs a separate specialist pass such as `Security`, `Database`, or cross-task QA integration.
+- The review task must record why it was created and which agents must participate.
 
 ---
 
@@ -139,6 +145,8 @@ Review flow:
 - `QA` review is required before `Done`.
 - `Security` review is required only when the task touches a sensitive area.
 - If review finds issues, move the task back to `In Progress` or `Blocked`.
+- A non-trivial task cannot move to `Done` if `qa.md` is missing.
+- A non-trivial task cannot move to `Done` if the QA follow-up review decision is missing.
 
 QA review depth:
 
@@ -178,6 +186,7 @@ Quick close-out checklist:
 - Risks or blockers recorded.
 - QA review recorded.
 - Security review recorded if applicable.
+- Task docs validated with `python scripts/validate_task_docs.py <task-path>`.
 - Status updated.
 - Next step recorded if the task is not done.
 
@@ -203,6 +212,44 @@ Default: Low.
 Only for architecture, security, database design, major refactors, or complex bugs.
 
 Explain why broader context is needed.
+
+## Token Consumption Strategy
+
+Use these rules to reduce token usage without losing correctness:
+
+- Read in layers: task file first, compact context second, source files last.
+- Read slices before full files when headings or targeted sections are enough.
+- Activate the fewest agents possible for the current step.
+- Delay QA, Security, and DevOps until their trigger conditions are present.
+- Prefer updating reusable context files over re-explaining the same state in every task.
+- Summarize decisions once in canonical files instead of duplicating them across notes.
+- Escalate from `Low` to `Medium` or `High` only when the task risk truly requires it.
+- If broader context is used, record why in the task notes or plan.
+
+## Token Efficiency Model
+
+Apply improvements in this order:
+
+### Low-Effort Savings
+
+- Assign one lead agent per stage instead of activating multiple peers by default.
+- Read diffs, task files, and targeted sections before reading full files.
+- Reuse canonical context files instead of repeating project state in task notes.
+- Keep agent outputs short and structured.
+
+### Medium-Effort Savings
+
+- Use structured handoffs between agents and stages.
+- Break multi-surface work into smaller tasks so each agent reads less context.
+- Run QA from changed files, acceptance criteria, and nearby regression risk first.
+- Trigger Security only when exposure or trust-boundary conditions change.
+
+### Structural High-Impact Savings
+
+- Maintain feature-level integration review separate from task-level review.
+- Keep a stable trigger catalog so specialist agents are not invoked defensively.
+- Treat context maintenance as an explicit operational step, not ad hoc narration.
+- Favor reusable templates and checklists over free-form review text.
 
 ---
 
@@ -240,7 +287,8 @@ Use only the agents needed.
 | Migration | Database, Backend, QA, Security if sensitive data is involved |
 | File upload | Architect, Backend, Security, Database if metadata is persisted, QA |
 | Excel/CSV transformation | Data, Backend, QA, Database if results are persisted |
-| Machine learning | Data, QA, Database if predictions or model runs are stored |
+| Machine learning | Machine Learning, Data, QA, Database if predictions or model runs are stored |
+| AI API or automation integration | AI Integrations, Backend, QA, Security if external exposure or sensitive data is involved |
 | Dashboard | Frontend, Backend, QA, Database if new queries or tables are needed |
 | Deployment | DevOps, Security, Database if migrations or persistence are involved |
 | Refactor | Architect, QA, Database if persistence changes |
@@ -254,6 +302,19 @@ Default activation rule:
 - Add Architect only for new features, cross-module design, or large refactors.
 - Add DevOps only for deployment, CI/CD, runtime environment, or production execution concerns.
 - Add Innovation only when the goal is to propose improvements, simplifications, or operational efficiencies without blocking current delivery.
+
+Activation limits:
+
+- `Fast`: max 2 active agents.
+- `Standard`: max 3 active agents.
+- `Deep`: activate extra agents only with a concrete risk-based reason.
+- `Review`: only review agents and changed files.
+
+Stage ownership rule:
+
+- Each task stage must have one lead agent.
+- Supporting agents join only when a documented trigger is hit.
+- When the lead agent changes, leave a structured handoff instead of repeating full context.
 
 ---
 
@@ -272,6 +333,10 @@ Use when:
 Never:
 
 - Own routine bug fixes or become a second Backend review layer for small isolated work.
+
+Limitation:
+
+- Must not expand a local implementation task into a broad redesign without a current requirement.
 
 ---
 
@@ -295,6 +360,10 @@ Rules:
 Never:
 
 - Redesign the schema alone when the task materially changes persistence structure.
+
+Limitation:
+
+- Must not own persistence structure, deployment flow, or UX decisions without the corresponding specialist.
 
 ---
 
@@ -328,9 +397,17 @@ Coordinate with:
 - Security for sensitive fields and access control.
 - QA for migration and integrity tests.
 
+Review coordination rule:
+
+- Join a dedicated review task when QA schedules Database review for persistence risk, migration risk, or integrity-sensitive changes.
+
 Never:
 
 - Add relationships, flexible JSON storage, or schema abstractions without a current feature need.
+
+Limitation:
+
+- Must not widen scope into API, UI, or infrastructure redesign unless the persistence change requires coordination.
 
 ---
 
@@ -356,6 +433,68 @@ Never:
 
 - Treat ambiguous columns, nulls, units, or date formats as acceptable assumptions.
 
+Limitation:
+
+- Must not infer business meaning from unclear inputs without an explicit rule or owner decision.
+
+---
+
+### Machine Learning
+
+Decides:
+
+- Target definition, baseline choice, model evaluation, leakage prevention, and training strategy for machine-learning work.
+
+Use when:
+
+- A task introduces or changes training, prediction logic, evaluation, feature engineering, or model-quality decisions.
+
+Rules:
+
+- Define the target variable clearly.
+- Start with a simple baseline before increasing model complexity.
+- Prevent leakage before training or evaluation.
+- Compare models fairly with clear metrics and operational interpretation.
+- Coordinate with Data on dataset quality and with Database when predictions or runs are persisted.
+
+Never:
+
+- Skip data-quality validation before modeling.
+- Jump to complex models without a baseline or justification.
+
+Limitation:
+
+- Must not own raw ingestion pipelines, AI API integrations, or schema design unless the modeling task directly requires coordination.
+
+---
+
+### AI Integrations
+
+Decides:
+
+- AI API usage, prompt flows, model routing, provider configuration, and AI-driven automations.
+
+Use when:
+
+- A task adds or changes AI APIs, embeddings, prompts, assistants, agent workflows, or automation behavior driven by external models.
+
+Rules:
+
+- Keep AI integrations explicit and testable.
+- Separate prompt logic, provider configuration, and application behavior where possible.
+- Define retries, failure paths, and fallback behavior clearly.
+- Coordinate with Security when secrets, files, or external providers change exposure risk.
+- Coordinate with DevOps when runtime configuration or deployment changes.
+
+Never:
+
+- Treat external AI providers as reliable without timeout, retry, and failure-path planning.
+- Hide prompt or model assumptions in opaque layers without traceability.
+
+Limitation:
+
+- Must not own machine-learning evaluation, core product behavior, or schema design unless the integration task directly requires coordination.
+
 ---
 
 ### Frontend
@@ -380,6 +519,10 @@ Never:
 
 - Optimize for aesthetics at the cost of clarity or task speed.
 
+Limitation:
+
+- Must not change backend contracts, persistence rules, or operational terminology alone.
+
 ---
 
 ### QA
@@ -387,6 +530,9 @@ Never:
 Decides:
 
 - Test coverage, acceptance criteria, edge-case checks, and regression validation depth.
+- Whether an additional review task must be created.
+- Which specialist review agents must join that follow-up review.
+- The review depth for the scheduled follow-up review.
 
 Use when:
 
@@ -401,6 +547,51 @@ Check:
 - Database constraints.
 - Migrations.
 - Regression risks.
+
+Review priority:
+
+- Start with changed files and acceptance criteria.
+- Check nearby regression risk before broad feature rereads.
+- Expand scope only if the diff suggests cross-module impact.
+
+Scheduling rule:
+
+- After each non-trivial task review, QA must explicitly decide whether an additional review task is needed.
+- If needed, QA schedules a new task for the follow-up review and names the required agents such as `Security`, `Database`, or additional `QA`.
+- If not needed, QA must still record why no follow-up review was scheduled.
+- If the follow-up decision fields are incomplete, the task must remain in `In Review`.
+- If a non-negotiable trigger is present, QA cannot close the task without scheduling the required follow-up review.
+- If `other` is marked `Yes`, QA cannot close the task without a valid, specific rationale.
+
+Schedule triggers:
+
+- Schedule `Security` review when the work touches auth, permissions, secrets, uploads, public exposure, sensitive data, or trust boundaries.
+- Schedule `Database` review when the work changes schema, migrations, constraints, integrity-sensitive queries, or persisted sensitive fields.
+- Schedule combined review tasks when the risk crosses multiple areas and a single task-level review is too narrow.
+
+Non-negotiable triggers:
+
+- `Security` follow-up review must be scheduled for login, authentication, authorization, roles, permissions, file upload, secret handling, new public endpoints, external integrations, or persisted sensitive data.
+- `Database` follow-up review must be scheduled for schema changes, migrations, constraints, persisted sensitive fields, or integrity-sensitive query changes.
+
+Proportionality rule:
+
+- Use `Light` review when the risk is local, bounded, and does not change a core trust boundary.
+- Use `Standard` review for normal functional cross-file changes that need additional verification but do not hit the deepest risk class.
+- Use `Deep` review when the work changes authentication, permissions, trust boundaries, migrations, sensitive data handling, public APIs, or other high-regression surfaces.
+
+`other` rationale rule:
+
+- If `other` is `Yes`, `other_valid_reason` must briefly state:
+  - what changed
+  - what concrete risk exists
+  - why the listed triggers do not already cover it
+  - why extra review is needed or why it is still safe not to schedule one
+- Generic reasons such as `por si acaso`, `por seguridad`, or `mejor revisar` are not valid.
+
+Limitation:
+
+- Must review changed behavior and adjacent risk only, not reopen settled architecture without evidence of impact.
 
 ---
 
@@ -425,6 +616,17 @@ Rules:
 - Sanitize filenames.
 - Apply least privilege.
 
+Activation rule:
+
+- Run only when a security trigger is present.
+- Review only the changed trust boundary, exposed interface, or sensitive-data path first.
+- Expand to deeper review only if the local findings justify it.
+- Join dedicated review tasks scheduled by QA and respect the requested review depth unless new findings require escalation.
+
+Limitation:
+
+- Must not run for every task by default; it activates only when trust boundaries or exposure risk change.
+
 ---
 
 ### Context
@@ -441,6 +643,10 @@ Never:
 
 - Expand context broadly before the task justifies it.
 
+Limitation:
+
+- Must optimize for compression and sequencing, not become a second implementation owner.
+
 ---
 
 ### DevOps
@@ -453,9 +659,21 @@ Use when:
 
 - A task directly involves deployment, production builds, environment setup, CI/CD, runtime debugging, or migration execution in an operational environment.
 
+Rules:
+
+- Keep delivery workflows reproducible and explicit.
+- Prefer the smallest environment change that unblocks delivery.
+- Separate build/runtime concerns from application logic changes.
+- Coordinate with Security when secrets, permissions, or exposed infrastructure change.
+- Coordinate with Database when deployment includes migrations or persistence operations.
+
 Never:
 
 - Join routine implementation work unless environment or delivery concerns are part of the task.
+
+Limitation:
+
+- Must not own feature behavior, schema design, or business logic unless delivery constraints directly require a change.
 
 ---
 
@@ -490,6 +708,27 @@ Never:
 - Block current implementation.
 - Join small routine tasks by default.
 - Propose large changes without a clear operational or maintenance benefit.
+
+Limitation:
+
+- Must stay advisory and bounded; it does not override delivery priorities or active task scope.
+
+## Development Methodology
+
+Use this repository workflow for normal delivery:
+
+1. Activate `Context` first to confirm the smallest valid reading path.
+2. Open or point to a task when the work is non-trivial or crosses files.
+3. Assign one lead agent for the current stage and keep other agents inactive unless triggered.
+4. Add specialist agents only when their trigger conditions are reached.
+5. When ownership changes, write a short structured handoff instead of re-explaining full context.
+6. Record reusable decisions in shared context or feature files instead of repeating them in chat.
+7. Move the task to `In Review` after implementation, then run QA from diff, acceptance criteria, and nearby regression risk.
+8. During QA, explicitly decide whether a dedicated follow-up review task is needed and record the rationale.
+9. If a follow-up review is needed, create a new review task and assign the required review agents and depth.
+10. Run Security or Database review directly only when QA determines a separate review task is unnecessary and the protocol still requires a local pass.
+11. Run `python scripts/validate_task_docs.py <task-path>` before closing a non-trivial task.
+12. Move to `Done` only after tracking, QA, validation, and any scheduled follow-up reviews are complete.
 
 ---
 

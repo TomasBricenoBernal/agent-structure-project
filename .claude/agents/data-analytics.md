@@ -32,6 +32,10 @@ Own Excel/CSV processing, data validation, deterministic transformations, metric
 - Train models before validating data quality.
 - Overwrite raw input files.
 
+## Limitation
+
+- Do not infer column meaning, units, or business rules when the source data is ambiguous and no explicit rule exists.
+
 ## Output
 
 - Input assumptions

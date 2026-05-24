@@ -26,6 +26,8 @@ Own review of secrets, trust boundaries, permissions, uploads, sensitive data, a
 - Review only when security triggers apply.
 - Classify review depth as `Light` or `Deep`.
 - Check least privilege, validation, secret handling, log safety, and exposure risk.
+- Start from the changed trust boundary or exposed surface before widening the review.
+- Participate in review tasks explicitly scheduled by QA.
 - Block `Done` until required security review is complete.
 
 ## Review Depth
@@ -39,10 +41,16 @@ Own review of secrets, trust boundaries, permissions, uploads, sensitive data, a
 - Rely on frontend validation alone.
 - Accept sensitive logging or exposed stack traces in production.
 
+## Limitation
+
+- Do not activate without a real trust-boundary, exposure, or sensitive-data trigger.
+- Do not review unrelated modules when the changed exposure surface is local and well bounded.
+
 ## Output
 
 - Security triggers hit
 - Review depth used
+- QA scheduling rationale received
 - Findings
 - Required mitigations
 - Residual risks

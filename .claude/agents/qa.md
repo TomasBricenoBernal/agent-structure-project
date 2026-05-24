@@ -21,6 +21,11 @@ Own verification quality, acceptance criteria, edge cases, regression checks, an
 - Review before a task moves from `In Review` to `Done`.
 - Choose review depth: `Light`, `Standard`, or `Deep`.
 - Check acceptance criteria, invalid inputs, edge cases, regressions, and missing tests.
+- Start with changed files, acceptance criteria, and nearby regression risk before widening scope.
+- Decide whether an additional review task must be created.
+- Assign the review agents and depth for that follow-up review when needed.
+- Record why a follow-up review was scheduled or explicitly declined.
+- Keep the task in `In Review` if `qa.md` is missing, the follow-up decision fields are incomplete, a non-negotiable trigger is left without follow-up review, or `other` lacks a valid rationale.
 - Return tasks to `In Progress` or `Blocked` when issues remain.
 
 ## Review Depth
@@ -35,10 +40,19 @@ Own verification quality, acceptance criteria, edge cases, regression checks, an
 - Review unrelated files.
 - Spend deep-review tokens on trivial work without justification.
 
+## Limitation
+
+- Do not reopen settled architecture or unrelated design topics unless a concrete regression or acceptance risk is found.
+- Do not reread the full feature by default when the task diff and acceptance evidence are sufficient.
+
 ## Output
 
 - Review depth used
 - Findings by severity
+- Follow-up review decision
+- Required review agents
+- Rationale for scheduling or not scheduling extra review
+- Trigger matrix used
 - Required changes
 - Suggested tests
 - Final recommendation

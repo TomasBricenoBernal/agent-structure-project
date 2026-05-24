@@ -1,0 +1,47 @@
+{
+  "yes_no_values": ["Yes", "No"],
+  "review_depths": ["Light", "Standard", "Deep"],
+  "task_statuses": ["Planned", "In Progress", "Blocked", "In Review", "Done"],
+  "qa_statuses": ["Pending", "Planned", "Done", "Blocked"],
+  "required_task_files": ["task.md", "modified_files.md", "qa.md"],
+  "required_qa_fields": [
+    "task_id",
+    "review_depth",
+    "status",
+    "reviewed_on"
+  ],
+  "required_follow_up_fields": [
+    "additional_review_needed",
+    "review_task_required",
+    "review_reason"
+  ],
+  "required_trigger_matrix_fields": [
+    "auth_or_login",
+    "authorization_or_permissions",
+    "sensitive_data",
+    "public_exposure_or_external_integration",
+    "file_upload_or_file_handling",
+    "secrets_or_sensitive_configuration",
+    "schema_or_migration_change",
+    "integrity_sensitive_query_or_constraint",
+    "other",
+    "other_valid_reason"
+  ],
+  "non_negotiable_triggers": {
+    "auth_or_login": ["Security"],
+    "authorization_or_permissions": ["Security"],
+    "sensitive_data": ["Security"],
+    "public_exposure_or_external_integration": ["Security"],
+    "file_upload_or_file_handling": ["Security"],
+    "secrets_or_sensitive_configuration": ["Security"],
+    "schema_or_migration_change": ["Database"],
+    "integrity_sensitive_query_or_constraint": ["Database"]
+  },
+  "generic_other_reason_phrases": [
+    "por si acaso",
+    "por seguridad",
+    "mejor revisar"
+  ],
+  "other_reason_delimiter": "|",
+  "other_reason_min_parts": 4
+}

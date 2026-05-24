@@ -72,12 +72,12 @@ Required task files for non-trivial work:
 
 - `task.md`
 - `modified_files.md`
+- `qa.md`
 
 Optional task files:
 
 - `handoff.md`
 - `plan.md`
-- `qa.md`
 - `notes.md`
 
 ## Feature Model
@@ -158,6 +158,23 @@ Review depth:
 - sensitive data, logs, or traces
 - trust-boundary validation changes
 
+### Validation
+
+Before moving a non-trivial task to `Done`, run:
+
+```bash
+python scripts/validate_task_docs.py tasks/YYYY/MM/{task-id}-{task-name}/
+```
+
+The validator:
+
+- checks that required task files exist
+- validates `qa.md` structure and review decisions
+- enforces non-negotiable review triggers from `.agents/config/review_rules.json`
+- confirms referenced follow-up review tasks exist
+
+The policy should evolve mainly in `.agents/config/review_rules.json`. The Python script should change only when the document format or validation engine itself changes.
+
 ## Documentation Rules
 
 Use:
@@ -196,13 +213,16 @@ Claude role files are available in:
 
 Included roles:
 
+- `ai-integrations`
 - `architect`
 - `backend`
 - `database`
+- `data-analytics`
+- `devops`
+- `frontend-ui`
+- `machine-learning`
 - `qa`
 - `security`
-- `data-analytics`
-- `frontend-ui`
 - `ux-operational`
 - `innovation`
 - `context-manager`

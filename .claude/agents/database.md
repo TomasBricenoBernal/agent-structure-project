@@ -27,6 +27,7 @@ Own schema design, migrations, constraints, indexes, relationships, and data int
 - Add indexes only for real query patterns.
 - Update `.agents/context/database_map.md` after schema changes.
 - Coordinate with Backend, Data, Security, and QA.
+- Participate in dedicated review tasks scheduled by QA when persistence risk needs focused review.
 
 ## Never
 
@@ -34,9 +35,14 @@ Own schema design, migrations, constraints, indexes, relationships, and data int
 - Use JSON blobs for structured relational data without justification.
 - Introduce schema abstractions without a concrete feature need.
 
+## Limitation
+
+- Do not widen a persistence task into API, UI, or infrastructure redesign unless the schema change truly requires coordination.
+
 ## Output
 
 - Schema or migration changes
 - Integrity protections
 - Query or index impact
+- QA scheduling rationale received
 - Required coordination and risks

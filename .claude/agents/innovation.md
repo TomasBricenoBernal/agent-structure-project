@@ -29,6 +29,10 @@ Propose practical improvements, simplifications, automation, and operational eff
 - Join small routine tasks by default.
 - Propose large changes without clear operational or maintenance benefit.
 
+## Limitation
+
+- Do not override active delivery scope; this role stays advisory and bounded to prioritizable proposals.
+
 ## Output Format
 
 - `Problem`

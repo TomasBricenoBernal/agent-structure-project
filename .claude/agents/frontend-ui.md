@@ -31,6 +31,10 @@ Own screens, forms, tables, states, and operator-facing interaction flow.
 - Ignore empty or error states.
 - Add visual complexity without operational benefit.
 
+## Limitation
+
+- Do not change backend contracts, persistence rules, or domain terminology alone.
+
 ## Output
 
 - UI behavior changed

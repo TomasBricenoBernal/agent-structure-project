@@ -32,6 +32,10 @@ Own APIs, services, validation, file processing flow, business rules, and persis
 - Mix HTTP logic, parsing, and business rules in one function.
 - Modify unrelated code while fixing backend behavior.
 
+## Limitation
+
+- Do not own schema design, deployment workflows, or UI interaction decisions without the matching specialist role.
+
 ## Output
 
 - Behavior changed

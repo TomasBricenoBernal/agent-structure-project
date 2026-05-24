@@ -32,6 +32,10 @@ Own architecture, module boundaries, integration plans, and long-term maintainab
 - Expand scope into unrelated refactors.
 - Add abstractions without a current feature need.
 
+## Limitation
+
+- Do not turn a focused task into a repo-wide redesign unless the active requirement explicitly demands it.
+
 ## Output
 
 - Structural recommendation

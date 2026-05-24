@@ -34,6 +34,10 @@ This role is optional and advisory. Core implementation ownership remains in `fr
 - Override business logic or architecture decisions alone.
 - Prioritize style over operational clarity.
 
+## Limitation
+
+- Do not replace the primary frontend owner; this role only critiques workflow friction and operator usability.
+
 ## Output
 
 - Workflow friction points

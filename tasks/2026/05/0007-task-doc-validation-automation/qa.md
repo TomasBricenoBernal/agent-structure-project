@@ -1,22 +1,21 @@
 # QA
 
-- `task_id`:
+- `task_id`: `0007-task-doc-validation-automation`
 - `review_depth`: `Light`
-- `status`: `Pending`
-- `reviewed_on`:
+- `status`: `Done`
+- `reviewed_on`: `2026-05-24`
 
 ## Checks
 
-- Acceptance criteria:
-- Changed files reviewed:
-- Main behavior:
-- Invalid inputs:
-- Edge cases:
-- Regression risk:
+- Confirm the validator runs with standard Python only.
+- Confirm review policy is loaded from config.
+- Confirm the documented command matches the actual script behavior.
 
 ## Findings
 
-- 
+- The validator runs with standard Python only.
+- Review policy is loaded from `.agents/config/review_rules.json`.
+- The documented command matches the script behavior.
 
 ## Follow-Up Review Decision
 
@@ -24,8 +23,8 @@
 - `review_task_required`: `No`
 - `review_agents`:
 - `review_depth`:
-- `review_scope`:
-- `review_reason`:
+- `review_scope`: `Local task-document validation automation only.`
+- `review_reason`: `The change adds local validation tooling and protocol references, but it does not change auth, persistence behavior, or trust boundaries in application code.`
 - `proposed_task_path`:
 
 ## Trigger Matrix
@@ -44,5 +43,3 @@
 ## Recommendation
 
 - `Done`
-- `Return to In Progress`
-- `Blocked`

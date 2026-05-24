@@ -29,6 +29,8 @@ This file corresponds to the compact `Context` role in `AGENTS.md`.
 - Keep task and feature tracking aligned.
 - Prefer task files over broad repository exploration.
 - Update `.agents/context/current_state.md` when project state changes.
+- Recommend the lead agent for the current stage.
+- Require a compact handoff when stage ownership changes.
 
 ## Never
 
@@ -36,9 +38,15 @@ This file corresponds to the compact `Context` role in `AGENTS.md`.
 - Read the whole repository by default.
 - Duplicate full feature context into task files.
 
+## Limitation
+
+- Do not become an implementation owner; this role only sequences, compresses, and updates working context.
+
 ## Output
 
 - Files to read now
 - Files to avoid
 - Required context updates
 - Token-risk warnings
+- Lead agent for this stage
+- Required handoff fields when ownership changes

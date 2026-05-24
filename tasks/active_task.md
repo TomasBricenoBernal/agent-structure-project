@@ -1,8 +1,8 @@
 # Active Task
 
-- `task_id`: `0001-bootstrap-workflow-protocol`
+- `task_id`: `0008-add-ml-and-ai-agents`
 - `status`: `Done`
-- `path`: `tasks/2026/05/0001-bootstrap-workflow-protocol/`
+- `path`: `tasks/2026/05/0008-add-ml-and-ai-agents/`
 - `related_feature`: `features/0001-workflow-protocol-foundation/`
-- `current_goal`: `Bootstrap the shared Codex and Claude workflow protocol.`
+- `current_goal`: `Add dedicated machine learning and AI integration agent specializations and align the shared protocol.`
 - `next_step`: `Create or point to the next active task before starting new non-trivial work.`

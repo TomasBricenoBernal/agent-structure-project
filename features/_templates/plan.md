@@ -13,6 +13,10 @@ Describe the feature outcome and business value.
 
 - `tasks/YYYY/MM/task-id-task-name/`
 
+## Review Tasks
+
+- `QA may schedule review tasks here as implementation tasks reach review.`
+
 ## Risks
 
 - 
