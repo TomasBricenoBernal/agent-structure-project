@@ -2,11 +2,11 @@
 
 ## Covered Tasks
 
-- `tasks/YYYY/MM/task-id-task-name/`
+- `planning/tasks/YYYY/MM/task-id-task-name/`
 
 ## Scheduled Review Tasks
 
-- `tasks/YYYY/MM/task-id-task-name/`: why this review task was scheduled, or note that none were needed yet
+- `planning/tasks/YYYY/MM/task-id-task-name/`: why this review task was scheduled, or note that none were needed yet
 
 ## Cross-Task Checks
 

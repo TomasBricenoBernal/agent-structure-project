@@ -2,7 +2,7 @@
 
 Each feature should live in:
 
-`features/{id}-{feature-name}/`
+`planning/features/{id}-{feature-name}/`
 
 Create only the files needed.
 
@@ -21,7 +21,7 @@ Optional files:
 - `changes_archive.md`
 - `notes.md`
 
-If a feature has multiple implementation steps, create task folders under `tasks/YYYY/MM/` and link each task to the related feature.
+If a feature has multiple implementation steps, create task folders under `planning/tasks/YYYY/MM/` and link each task to the related feature.
 
 ---
 

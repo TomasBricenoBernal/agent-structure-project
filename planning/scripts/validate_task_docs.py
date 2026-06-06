@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_CONFIG = ROOT / ".agents" / "config" / "review_rules.json"
 KEY_VALUE_RE = re.compile(r"^\s*-\s+`([^`]+)`:\s*(.*)\s*$")
 
@@ -46,10 +46,10 @@ def resolve_task_paths(raw_paths: List[str]) -> List[Path]:
     if raw_paths:
         return [resolve_task_path(Path(path)) for path in raw_paths]
 
-    active_task = parse_markdown_file(ROOT / "tasks" / "active_task.md")
+    active_task = parse_markdown_file(ROOT / "planning" / "tasks" / "active_task.md")
     active_path = active_task["root"].get("path", "").strip("`")
     if not active_path:
-        raise SystemExit("Could not resolve active task path from tasks/active_task.md")
+        raise SystemExit("Could not resolve active task path from planning/tasks/active_task.md")
     return [resolve_task_path(ROOT / active_path)]
 
 

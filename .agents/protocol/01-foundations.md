@@ -21,7 +21,7 @@ Use the smallest context required for the task.
 
 Read these first:
 
-1. `tasks/active_task.md`
+1. `planning/tasks/active_task.md`
 2. `.agents/context/TASK.md`
 3. `.agents/context/current_state.md`
 
@@ -31,7 +31,7 @@ Then read these if present (they are created on demand, not by default):
 - `.agents/context/source_map.md`
 - `.agents/context/known_decisions.md`
 
-If `tasks/active_task.md` and `.agents/context/TASK.md` conflict, follow `tasks/active_task.md` and update `.agents/context/TASK.md`.
+If `planning/tasks/active_task.md` and `.agents/context/TASK.md` conflict, follow `planning/tasks/active_task.md` and update `.agents/context/TASK.md`.
 
 For database tasks, also read `.agents/context/database_map.md` if present.
 
@@ -47,7 +47,7 @@ Not imported by default to keep the always-on protocol small. Read with the Read
 tool only when the task matches:
 
 - `.agents/protocol/07-database.md` — any task that changes schema, migrations, persistence, relationships, or important queries.
-- `.agents/protocol/08-feature-tracking.md` — when creating or updating a feature folder under `features/`.
+- `.agents/protocol/08-feature-tracking.md` — when creating or updating a feature folder under `planning/features/`.
 
 ---
 

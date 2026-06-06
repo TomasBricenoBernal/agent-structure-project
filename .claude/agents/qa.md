@@ -13,7 +13,7 @@ Own verification quality, acceptance criteria, edge cases, regression checks, an
 
 ## Read First
 
-1. `tasks/active_task.md`
+1. `planning/tasks/active_task.md`
 2. `.agents/context/TASK.md`
 3. Related task files
 4. Changed source files only

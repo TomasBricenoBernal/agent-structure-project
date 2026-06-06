@@ -8,11 +8,11 @@ Tasks represent specific units of work that can be implemented, reviewed, or clo
 
 Feature folder:
 
-`features/{id}-{feature-name}/`
+`planning/features/{id}-{feature-name}/`
 
 Task folder:
 
-`tasks/YYYY/MM/{task-id}-{task-name}/`
+`planning/tasks/YYYY/MM/{task-id}-{task-name}/`
 
 ---
 
@@ -54,15 +54,15 @@ Review task rule:
 
 Before working, read:
 
-1. `tasks/active_task.md`
+1. `planning/tasks/active_task.md`
 2. `.agents/context/TASK.md`
 3. `.agents/context/current_state.md`
 4. Related task folder files.
 5. Related feature files only if applicable.
 
-If `tasks/active_task.md` points to a task folder, read only the task files needed for the current work.
+If `planning/tasks/active_task.md` points to a task folder, read only the task files needed for the current work.
 
-`.agents/context/TASK.md` may act as a short operational mirror, but `tasks/active_task.md` is the primary task source.
+`.agents/context/TASK.md` may act as a short operational mirror, but `planning/tasks/active_task.md` is the primary task source.
 
 Use these task statuses only:
 
@@ -118,7 +118,7 @@ A non-trivial task is not complete until:
 - `.agents/context/current_state.md` is updated if project state changed.
 - Required QA review is completed.
 - Required Security review is completed when security triggers apply.
-- `tasks/active_task.md` is updated to Done, Blocked, In Review, or the next active task.
+- `planning/tasks/active_task.md` is updated to Done, Blocked, In Review, or the next active task.
 
 Quick close-out checklist:
 
@@ -127,7 +127,7 @@ Quick close-out checklist:
 - Risks or blockers recorded.
 - QA review recorded.
 - Security review recorded if applicable.
-- Task docs validated with `python scripts/validate_task_docs.py <task-path>`.
+- Task docs validated with `python planning/scripts/validate_task_docs.py <task-path>`.
 - Status updated.
 - Next step recorded if the task is not done.
 

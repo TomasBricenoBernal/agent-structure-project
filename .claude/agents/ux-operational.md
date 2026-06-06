@@ -17,7 +17,7 @@ This role is optional and advisory. Core implementation ownership remains in `fr
 
 ## Read First
 
-1. `tasks/active_task.md`
+1. `planning/tasks/active_task.md`
 2. `.agents/context/TASK.md`
 3. Related task files
 4. Only the UI or workflow files needed for the review

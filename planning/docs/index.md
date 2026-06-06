@@ -1,10 +1,10 @@
 # Docs Index
 
-Use `docs/` for reusable repository-wide references.
+Use `planning/docs/` for reusable repository-wide references.
 
-Use `features/` for feature-specific tracking.
+Use `planning/features/` for feature-specific tracking.
 
-Use `tasks/` for task execution, handoff, and review.
+Use `planning/tasks/` for task execution, handoff, and review.
 
 Use `.agents/context/` for short operational context.
 
@@ -14,7 +14,7 @@ Use `.agents/context/` for short operational context.
 - `glossary.md`: operational or domain terms.
 - `token_strategy.md`: context and token usage guidance.
 
-## Do Not Use `docs/` For
+## Do Not Use `planning/docs/` For
 
 - Active task execution logs.
 - Feature-specific change tracking.

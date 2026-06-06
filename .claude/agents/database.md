@@ -13,7 +13,7 @@ Own schema design, migrations, constraints, indexes, relationships, and data int
 
 ## Read First
 
-1. `tasks/active_task.md`
+1. `planning/tasks/active_task.md`
 2. `.agents/context/TASK.md`
 3. `.agents/context/current_state.md`
 4. `.agents/context/database_map.md`

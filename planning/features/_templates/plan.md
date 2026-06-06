@@ -11,7 +11,7 @@ Describe the feature outcome and business value.
 
 ## Planned Tasks
 
-- `tasks/YYYY/MM/task-id-task-name/`
+- `planning/tasks/YYYY/MM/task-id-task-name/`
 
 ## Review Tasks
 

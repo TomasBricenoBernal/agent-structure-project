@@ -31,7 +31,7 @@ Role label (used in the activation table and in QA `review_agents`) → subagent
 ## Review Governance
 
 These rules govern the QA-led review workflow and are enforced by
-`scripts/validate_task_docs.py` against `.agents/config/review_rules.json`.
+`planning/scripts/validate_task_docs.py` against `.agents/config/review_rules.json`.
 They apply across roles, so they live in the always-on protocol rather than
 inside a single subagent. Agent labels here (`Security`, `Database`) are the
 values written in the QA `review_agents` field.

@@ -13,7 +13,7 @@ Own review of secrets, trust boundaries, permissions, uploads, sensitive data, a
 
 ## Read First
 
-1. `tasks/active_task.md`
+1. `planning/tasks/active_task.md`
 2. `.agents/context/TASK.md`
 3. Related task files
 4. Only the changed files and interfaces that affect exposure

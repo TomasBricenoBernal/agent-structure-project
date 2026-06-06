@@ -1,8 +1,9 @@
 # Agent Workflow Protocol
 
-A reusable base for AI-assisted software work. It gives agents (Claude Code, and
-Codex-style tools via `AGENTS.md`) a clear, low-token operating protocol: how to
-read context, how to track work, who reviews what, and when.
+A reusable base for AI-assisted software work. It gives coding agents — Claude
+Code (`CLAUDE.md`), and Codex and opencode (`AGENTS.md`) — a clear, low-token
+operating protocol: how to read context, how to track work, who reviews what,
+and when.
 
 The design goals, in order: **correctness, maintainability, clarity,
 reusability, security, and low token usage.**
@@ -22,8 +23,8 @@ reusability, security, and low token usage.**
    **isolated context** so heavy reading doesn't bloat the main thread.
 4. **Work is tracked as tasks** (and grouped into features when useful). A task
    isn't `Done` until QA — and Security when risk applies — has reviewed it.
-5. **A validator** (`scripts/validate_task_docs.py`) enforces the review rules
-   defined in `.agents/config/review_rules.json`.
+5. **A validator** (`planning/scripts/validate_task_docs.py`) enforces the review
+   rules defined in `.agents/config/review_rules.json`.
 
 ---
 
@@ -31,34 +32,33 @@ reusability, security, and low token usage.**
 
 ```text
 .
-├── CLAUDE.md                 # Thin index: imports the protocol modules (for Claude)
-├── AGENTS.md                 # Thin index: same imports (for Codex-style tools)
+├── CLAUDE.md                 # Thin index: imports the protocol modules (for Claude Code)
+├── AGENTS.md                 # Thin index: same imports (for Codex / opencode)
 ├── README.md                 # This guide
+├── .gitignore
 │
-├── .agents/
+├── .agents/                  # Shared protocol — read by all tools via the index files
 │   ├── protocol/             # The protocol itself, split into modules (00–10)
 │   ├── config/
 │   │   └── review_rules.json # Machine-readable review policy (used by the validator)
 │   └── context/              # Short operational context (state, active task mirror)
 │
-├── .claude/
+├── .claude/                  # Claude Code specifics
 │   ├── agents/               # 13 Claude Code subagents (role specialists)
 │   ├── settings.json         # Shared permission allowlist (committed, read-only commands)
 │   └── settings.local.json   # Personal permission overrides (gitignored)
 │
-├── scripts/
-│   └── validate_task_docs.py # Validates task/QA docs against review_rules.json
-│
-├── tasks/
-│   ├── active_task.md        # Pointer to the current task
-│   ├── _templates/           # task.md, modified_files.md, qa.md, plan.md, handoff.md
-│   └── YYYY/MM/{id}-{name}/  # One folder per non-trivial task
-│
-├── features/
-│   ├── _templates/           # plan.md, modified_files.md, changes_current.md, qa.md
-│   └── {id}-{name}/          # One folder per feature
-│
-└── docs/                     # Reusable repo-wide references (index, glossary, etc.)
+└── planning/                 # Working data (visible; real project code lives at root too)
+    ├── tasks/
+    │   ├── active_task.md     # Pointer to the current task
+    │   ├── _templates/        # task.md, modified_files.md, qa.md, plan.md, handoff.md
+    │   └── YYYY/MM/{id}-{name}/   # One folder per non-trivial task
+    ├── features/
+    │   ├── _templates/        # plan.md, modified_files.md, changes_current.md, qa.md
+    │   └── {id}-{name}/       # One folder per feature
+    ├── docs/                  # Reusable repo-wide references (index, glossary, etc.)
+    └── scripts/
+        └── validate_task_docs.py  # Validates task/QA docs against review_rules.json
 ```
 
 ---
@@ -99,6 +99,10 @@ register and delegate to it. Run `/agents` to see them. The main agent delegates
 a step to a subagent; the subagent works in its own context and returns only the
 conclusion.
 
+**Cross-tool note:** subagents are a Claude Code feature. Codex and opencode read
+the shared protocol through `AGENTS.md` but use their own agent mechanisms; they
+do not consume `.claude/agents/`.
+
 Models are tiered to balance capability against cost:
 
 | Subagent | Model | Tools | Use for |
@@ -134,7 +138,7 @@ feature, needs review or handoff, or touches architecture, database, security,
 data processing, or deployment. Skip the folder for trivial one-line changes.
 
 ```text
-tasks/YYYY/MM/{task-id}-{task-name}/
+planning/tasks/YYYY/MM/{task-id}-{task-name}/
 ```
 
 | File | Required? | Purpose |
@@ -146,7 +150,7 @@ tasks/YYYY/MM/{task-id}-{task-name}/
 | `handoff.md` | optional | State when paused/handed off |
 | `notes.md` | optional | Working notes |
 
-`tasks/active_task.md` always points to the current task.
+`planning/tasks/active_task.md` always points to the current task.
 
 ## Feature model
 
@@ -154,7 +158,7 @@ Features group related work that forms a meaningful capability or spans multiple
 tasks. Don't create a feature per task.
 
 ```text
-features/{feature-id}-{feature-name}/
+planning/features/{feature-id}-{feature-name}/
 ```
 
 Recommended files: `plan.md`, `modified_files.md`, `changes_current.md`, `qa.md`.
@@ -165,14 +169,14 @@ Recommended files: `plan.md`, `modified_files.md`, `changes_current.md`, `qa.md`
 
 ### Reading order (start of every task)
 
-1. `tasks/active_task.md`
+1. `planning/tasks/active_task.md`
 2. `.agents/context/TASK.md`
 3. `.agents/context/current_state.md`
 4. The related task files (and on-demand protocol modules if the task matches)
 5. Related feature files only if needed
 
-If `active_task.md` and `.agents/context/TASK.md` conflict, follow
-`active_task.md`.
+If `planning/tasks/active_task.md` and `.agents/context/TASK.md` conflict, follow
+`planning/tasks/active_task.md`.
 
 ### Statuses
 
@@ -202,7 +206,7 @@ If `active_task.md` and `.agents/context/TASK.md` conflict, follow
 Before marking a non-trivial task `Done`:
 
 ```bash
-python scripts/validate_task_docs.py tasks/YYYY/MM/{task-id}-{task-name}/
+python planning/scripts/validate_task_docs.py planning/tasks/YYYY/MM/{task-id}-{task-name}/
 ```
 
 The validator checks required files, validates `qa.md` structure and review
@@ -232,9 +236,9 @@ Low token usage is a first-class goal, built into the structure:
 
 ## Templates
 
-- **Tasks:** `tasks/_templates/` — `task.md`, `modified_files.md`, `qa.md`,
-  `plan.md`, `handoff.md`
-- **Features:** `features/_templates/` — `plan.md`, `modified_files.md`,
+- **Tasks:** `planning/tasks/_templates/` — `task.md`, `modified_files.md`,
+  `qa.md`, `plan.md`, `handoff.md`
+- **Features:** `planning/features/_templates/` — `plan.md`, `modified_files.md`,
   `changes_current.md`, `qa.md`
 
 Copy a template into a new task/feature folder rather than writing from scratch;
@@ -244,11 +248,11 @@ the `qa.md` template matches what the validator expects.
 
 ## Using this in a new project
 
-1. Keep `.agents/`, `.claude/`, `scripts/`, the top-level `CLAUDE.md`/`AGENTS.md`,
-   and the `tasks/` + `features/` templates.
+1. Keep `.agents/`, `.claude/`, `planning/`, and the top-level
+   `CLAUDE.md`/`AGENTS.md` (plus `.gitignore` and this `README.md`).
 2. Open Claude Code and run `/agents` to confirm the 13 subagents are registered.
-3. Point `tasks/active_task.md` at your first real task and start working with
-   minimal context.
+3. Point `planning/tasks/active_task.md` at your first real task and start working
+   with minimal context.
 4. Adjust roles by editing the subagent files, and review policy by editing
    `review_rules.json` — the protocol modules rarely need changing.
 ```

@@ -12,7 +12,7 @@ Use this repository workflow for normal delivery:
 8. During QA, explicitly decide whether a dedicated follow-up review task is needed and record the rationale.
 9. If a follow-up review is needed, create a new review task and assign the required review agents and depth.
 10. Run Security or Database review directly only when QA determines a separate review task is unnecessary and the protocol still requires a local pass.
-11. Run `python scripts/validate_task_docs.py <task-path>` before closing a non-trivial task.
+11. Run `python planning/scripts/validate_task_docs.py <task-path>` before closing a non-trivial task.
 12. Move to `Done` only after tracking, QA, validation, and any scheduled follow-up reviews are complete.
 
 ---
