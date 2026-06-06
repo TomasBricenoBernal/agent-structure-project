@@ -271,21 +271,64 @@ the `qa.md` template matches what the validator expects.
 
 ---
 
-## Using this in a new project
+## Getting started (step by step)
 
-1. Keep `.agents/`, `.claude/`, `.githooks/`, `planning/`, and the top-level
-   `CLAUDE.md`/`AGENTS.md` (plus `.gitignore` and this `README.md`).
-2. Enable the pre-commit hook so `AGENTS.md` regenerates automatically:
+### 1. Set up a clone (once)
+
+```bash
+git clone <repo-url>
+cd agent-structure-project
+
+# Git does not enable hooks on clone (by design). Enable them so AGENTS.md
+# regenerates automatically before every commit.
+git config core.hooksPath .githooks
+git config core.hooksPath          # should print: .githooks
+```
+
+Adding the framework to an **existing** project instead of cloning? Copy these
+into your repo root: `CLAUDE.md`, `AGENTS.md`, `.agents/`, `.claude/`,
+`.githooks/`, `planning/`, and the `.gitignore` entries — then run the same
+`git config core.hooksPath .githooks`.
+
+### 2. Verify it works
+
+```bash
+python planning/scripts/validate_task_docs.py     # → OK: planning/tasks/...
+python planning/scripts/build_agents.py           # → Wrote AGENTS.md from 11 modules
+```
+
+In Claude Code, run `/agents` — the 13 subagents should be listed (restart Claude
+Code if you just added them).
+
+### 3. Work a task (daily loop)
+
+1. Point `planning/tasks/active_task.md` at the task (`task_id`, `path`,
+   `status`, `current_goal`).
+2. For non-trivial work, create a task folder from the templates:
 
    ```bash
-   git config core.hooksPath .githooks
+   mkdir -p planning/tasks/2026/06/0009-my-task
+   cp planning/tasks/_templates/task.md \
+      planning/tasks/_templates/modified_files.md \
+      planning/tasks/_templates/qa.md \
+      planning/tasks/2026/06/0009-my-task/
    ```
 
-3. Open Claude Code and run `/agents` to confirm the 13 subagents are registered.
-4. Point `planning/tasks/active_task.md` at your first real task and start working
-   with minimal context.
-5. Adjust roles by editing the subagent files, and review policy by editing
-   `review_rules.json` — the protocol modules rarely need changing. After editing
-   a module, the hook regenerates `AGENTS.md` for you (or run
-   `python planning/scripts/build_agents.py` manually).
-```
+3. Work with minimal context — the protocol and subagent delegation handle the rest.
+4. Move the task to `In Review`, run QA, then validate before closing:
+
+   ```bash
+   python planning/scripts/validate_task_docs.py planning/tasks/2026/06/0009-my-task/
+   ```
+
+5. Mark `Done` only after QA (and Security, if triggered) pass. See **Workflow**
+   above for the statuses and review rules.
+
+### 4. Change the protocol or the agents
+
+- **A protocol rule:** edit the module under `.agents/protocol/`. On `git commit`
+  the hook regenerates `AGENTS.md` (or run `python planning/scripts/build_agents.py`).
+- **A role/agent:** edit the file under `.claude/agents/`, then restart Claude
+  Code so it re-registers.
+- **Review policy:** edit `.agents/config/review_rules.json` (not the validator
+  script).
