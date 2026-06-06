@@ -273,22 +273,38 @@ the `qa.md` template matches what the validator expects.
 
 ## Getting started (step by step)
 
-### 1. Set up a clone (once)
+### 1. Start a new project (once)
 
-```bash
-git clone <repo-url>
-cd agent-structure-project
+This repo is a **GitHub template**, so the fastest way to start a project is:
 
-# Git does not enable hooks on clone (by design). Enable them so AGENTS.md
-# regenerates automatically before every commit.
-git config core.hooksPath .githooks
-git config core.hooksPath          # should print: .githooks
-```
+1. On the template repo, click **"Use this template" → "Create a new
+   repository"**, name it, and create it. GitHub copies every file with a fresh
+   history — you do not create a separate empty repo.
+2. Clone your new repo and enable the hook:
 
-Adding the framework to an **existing** project instead of cloning? Copy these
-into your repo root: `CLAUDE.md`, `AGENTS.md`, `.agents/`, `.claude/`,
-`.githooks/`, `planning/`, and the `.gitignore` entries — then run the same
+   ```bash
+   git clone https://github.com/<you>/<new-repo>.git
+   cd <new-repo>
+   git config core.hooksPath .githooks   # git does not enable hooks on clone
+   git config core.hooksPath             # should print: .githooks
+   ```
+
+3. (Recommended) Clear the example tasks/feature so you start clean — keep the
+   `_templates/` folders:
+
+   ```bash
+   rm -rf planning/tasks/2026 planning/features/0001-workflow-protocol-foundation
+   ```
+
+   Then reset `planning/tasks/active_task.md` to your first real task.
+
+**Adding the framework to an existing project** instead? Copy `CLAUDE.md`,
+`AGENTS.md`, `.agents/`, `.claude/`, `.githooks/`, `planning/`, and the
+`.gitignore` entries into your repo root, then run
 `git config core.hooksPath .githooks`.
+
+> Note: `settings.local.json` is personal (gitignored) and does **not** travel;
+> the shared `settings.json` does, so read-only command permissions come along.
 
 ### 2. Verify it works
 
