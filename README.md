@@ -1,261 +1,254 @@
-# AI Workflow Protocol for Agent-Driven Projects
+# Agent Workflow Protocol
 
-This repository defines a lightweight working protocol for AI-assisted software projects that need strong structure without high coordination overhead.
+A reusable base for AI-assisted software work. It gives agents (Claude Code, and
+Codex-style tools via `AGENTS.md`) a clear, low-token operating protocol: how to
+read context, how to track work, who reviews what, and when.
 
-It is designed for teams using both Codex and Claude in the same codebase.
+The design goals, in order: **correctness, maintainability, clarity,
+reusability, security, and low token usage.**
 
-The goal is to keep work correct, reviewable, and cheap in tokens.
+---
 
-## What This Repository Provides
+## How it works in 30 seconds
 
-- a shared repository protocol for Codex and Claude
-- task and feature tracking conventions
-- review gates with `QA` and risk-based `Security`
-- role-specific agent definitions for Claude
-- minimal templates for repeatable execution
-- reusable repository documentation structure
+1. **The protocol lives in small modules** under `.agents/protocol/`.
+   `CLAUDE.md` and `AGENTS.md` are thin indexes that `@import` those modules, so
+   both tools share one source of truth.
+2. **Most of the protocol loads every session** (the "always-on" base).
+   Niche modules (database, feature tracking) load **only when the task needs
+   them** to keep the base small.
+3. **Specialist work is delegated to subagents** in `.claude/agents/`. Each is a
+   real Claude Code subagent with its own model and tools, and runs in an
+   **isolated context** so heavy reading doesn't bloat the main thread.
+4. **Work is tracked as tasks** (and grouped into features when useful). A task
+   isn't `Done` until QA — and Security when risk applies — has reviewed it.
+5. **A validator** (`scripts/validate_task_docs.py`) enforces the review rules
+   defined in `.agents/config/review_rules.json`.
 
-## Core Principles
+---
 
-- Use the smallest context required.
-- Do not inspect the whole repository by default.
-- Track non-trivial work at the task level.
-- Group related work under features only when it adds value.
-- Require `QA` before a task moves to `Done`.
-- Require `Security` review only when sensitive risk triggers apply.
-- Prefer simple, explicit structures over broad abstractions.
-
-## Repository Structure
+## Repository structure
 
 ```text
 .
-├── AGENTS.md
-├── CLAUDE.md
-├── .claude/
-│   └── agents/
+├── CLAUDE.md                 # Thin index: imports the protocol modules (for Claude)
+├── AGENTS.md                 # Thin index: same imports (for Codex-style tools)
+├── README.md                 # This guide
+│
 ├── .agents/
-│   └── context/
+│   ├── protocol/             # The protocol itself, split into modules (00–10)
+│   ├── config/
+│   │   └── review_rules.json # Machine-readable review policy (used by the validator)
+│   └── context/              # Short operational context (state, active task mirror)
+│
+├── .claude/
+│   ├── agents/               # 13 Claude Code subagents (role specialists)
+│   ├── settings.json         # Shared permission allowlist (committed, read-only commands)
+│   └── settings.local.json   # Personal permission overrides (gitignored)
+│
+├── scripts/
+│   └── validate_task_docs.py # Validates task/QA docs against review_rules.json
+│
 ├── tasks/
-│   ├── active_task.md
-│   ├── _templates/
-│   └── YYYY/MM/{task-id}-{task-name}/
+│   ├── active_task.md        # Pointer to the current task
+│   ├── _templates/           # task.md, modified_files.md, qa.md, plan.md, handoff.md
+│   └── YYYY/MM/{id}-{name}/  # One folder per non-trivial task
+│
 ├── features/
-│   ├── _templates/
-│   └── {feature-id}-{feature-name}/
-└── docs/
+│   ├── _templates/           # plan.md, modified_files.md, changes_current.md, qa.md
+│   └── {id}-{name}/          # One folder per feature
+│
+└── docs/                     # Reusable repo-wide references (index, glossary, etc.)
 ```
 
-## Top-Level Files
+---
 
-- `AGENTS.md`: shared protocol for Codex-style workflows.
-- `CLAUDE.md`: shared protocol for Claude, synchronized with the repository rules.
-- `.claude/agents/*.md`: role-specific Claude agent instructions.
+## The protocol system
 
-## Task Model
+`CLAUDE.md` and `AGENTS.md` contain almost no rules themselves. They are indexes
+that import modules from `.agents/protocol/` using the `@path` syntax. To change
+a rule, edit the module once — both top-level files reflect it automatically.
 
-Tasks are the main execution unit.
+### Protocol modules
 
-Create a task folder when the work:
+| Module | Loaded | Covers |
+|---|---|---|
+| `00-authority.md` | always | Protocol authority and precedence; subagents are the source of truth for role behavior |
+| `01-foundations.md` | always | Project purpose, core reading order, **on-demand module index**, create-on-demand rule |
+| `02-task-tracking.md` | always | Task & feature tracking rules, active-task protocol, statuses, completion rule |
+| `03-token-budget.md` | always | Token budget tiers (Low/Medium/High) and consumption strategy |
+| `04-work-modes-activation.md` | always | Work modes, agent activation table, activation limits, **delegation for token efficiency** |
+| `05-agent-roles.md` | always | Role → subagent map and **review governance** (QA scheduling, triggers, proportionality) |
+| `06-methodology-docs.md` | always | Development methodology and documentation rules |
+| `07-database.md` | **on-demand** | Database coordination protocol and schema simplicity rules |
+| `08-feature-tracking.md` | **on-demand** | Detailed feature-tracking conventions |
+| `09-rules.md` | always | No-Go rules, data-processing rules, machine-learning rules |
+| `10-review-output.md` | always | Review severity scale and expected final-response format |
 
-- affects more than one file
-- belongs to a feature
-- requires review or handoff
-- involves architecture, database, security, data processing, or deployment
+On-demand modules are **not** imported by default. The agent reads them with the
+Read tool only when the task matches a trigger listed in `01-foundations.md`
+(e.g. read `07-database.md` for any schema/migration/persistence change).
 
-Task path format:
+---
+
+## Agents
+
+The 13 files in `.claude/agents/` are **real Claude Code subagents**. Each has
+YAML frontmatter (`name`, `description`, `tools`, `model`) so Claude Code can
+register and delegate to it. Run `/agents` to see them. The main agent delegates
+a step to a subagent; the subagent works in its own context and returns only the
+conclusion.
+
+Models are tiered to balance capability against cost:
+
+| Subagent | Model | Tools | Use for |
+|---|---|---|---|
+| `architect` | opus | read-only | Module boundaries, integration plans, refactors (advisory) |
+| `database` | opus | read/write | Schema, migrations, constraints, integrity |
+| `machine-learning` | opus | read/write | Targets, baselines, evaluation, leakage prevention |
+| `qa` | opus | read/write docs | Verification, acceptance, the follow-up-review decision |
+| `security` | opus | read-only | Secrets, trust boundaries, uploads, sensitive data (advisory) |
+| `backend` | sonnet | read/write | APIs, services, validation, business rules |
+| `frontend-ui` | sonnet | read/write | Screens, forms, states, operator workflows |
+| `data-analytics` | sonnet | read/write | Excel/CSV, transformations, metrics, model prep |
+| `ai-integrations` | sonnet | read/write | AI APIs, prompts, model routing, automations |
+| `devops` | sonnet | read/write | Deployment, CI/CD, runtime, release safety |
+| `context-manager` | haiku | read/write context | Decides what to read/skip/update; keeps context cheap |
+| `innovation` | haiku | read-only | Practical improvement proposals (advisory) |
+| `ux-operational` | haiku | read-only | Workflow-friction critique (advisory, optional) |
+
+Activation is **minimal by default** — start with the smallest useful set and add
+specialists only when a documented trigger fires. The activation table in
+`04-work-modes-activation.md` maps task types to the agents they need. (Note a
+few label/file differences: Data → `data-analytics`, Frontend → `frontend-ui`,
+Context → `context-manager`.)
+
+---
+
+## Task model
+
+Tasks are the main unit of execution.
+
+**Create a task folder** when the work affects more than one file, belongs to a
+feature, needs review or handoff, or touches architecture, database, security,
+data processing, or deployment. Skip the folder for trivial one-line changes.
 
 ```text
 tasks/YYYY/MM/{task-id}-{task-name}/
 ```
 
-Required task files for non-trivial work:
+| File | Required? | Purpose |
+|---|---|---|
+| `task.md` | yes (non-trivial) | What/why, scope, status |
+| `modified_files.md` | yes (non-trivial) | Files changed |
+| `qa.md` | yes (non-trivial) | Review record, trigger matrix, follow-up decision |
+| `plan.md` | optional | Implementation plan |
+| `handoff.md` | optional | State when paused/handed off |
+| `notes.md` | optional | Working notes |
 
-- `task.md`
-- `modified_files.md`
-- `qa.md`
+`tasks/active_task.md` always points to the current task.
 
-Optional task files:
+## Feature model
 
-- `handoff.md`
-- `plan.md`
-- `notes.md`
-
-## Feature Model
-
-Features are used only when work represents a meaningful capability, spans multiple tasks, or benefits from grouped tracking.
-
-Feature path format:
+Features group related work that forms a meaningful capability or spans multiple
+tasks. Don't create a feature per task.
 
 ```text
 features/{feature-id}-{feature-name}/
 ```
 
-Do not create a new feature for every task.
+Recommended files: `plan.md`, `modified_files.md`, `changes_current.md`, `qa.md`.
 
-## Active Task Protocol
+---
 
-Before starting work, read:
+## Workflow
+
+### Reading order (start of every task)
 
 1. `tasks/active_task.md`
 2. `.agents/context/TASK.md`
 3. `.agents/context/current_state.md`
-4. only the related task files
-5. related feature files only if needed
+4. The related task files (and on-demand protocol modules if the task matches)
+5. Related feature files only if needed
 
-If `tasks/active_task.md` and `.agents/context/TASK.md` conflict, follow `tasks/active_task.md`.
+If `active_task.md` and `.agents/context/TASK.md` conflict, follow
+`active_task.md`.
 
-## Task Statuses
+### Statuses
 
-Use only these statuses:
+`Planned` → `In Progress` → `In Review` → `Done`, with fallbacks
+`In Review → In Progress` and `In Review → Blocked`.
 
-- `Planned`
-- `In Progress`
-- `Blocked`
-- `In Review`
-- `Done`
+- `Planned`: exists, not started (or postponed)
+- `In Progress`: started, will continue
+- `Blocked`: started, cannot continue
+- `In Review`: implementation complete, review pending
+- `Done`: implementation, review, and close-out complete
 
-Meaning:
+### Review
 
-- `Planned`: task exists but has not started, or is intentionally postponed
-- `In Progress`: work started and will continue
-- `Blocked`: work started but cannot continue
-- `In Review`: implementation is complete and required review is pending
-- `Done`: implementation, review, and close-out are complete
-
-## Review Flow
-
-The expected flow is:
-
-```text
-Planned -> In Progress -> In Review -> Done
-```
-
-With fallback transitions:
-
-- `In Review -> In Progress`
-- `In Review -> Blocked`
-
-### QA
-
-`QA` review is required before any non-trivial task moves to `Done`.
-
-Review depth:
-
-- `Light`: small local changes with low regression risk
-- `Standard`: normal functional changes
-- `Deep`: database, migrations, security-sensitive work, Excel/CSV, calculations, ML, public APIs, or high-regression-risk work
-
-### Security
-
-`Security` review is required only when the task touches sensitive areas such as:
-
-- authentication or authorization
-- permissions or roles
-- file uploads
-- secrets or sensitive configuration
-- public endpoints
-- externally exposed integrations
-- sensitive data, logs, or traces
-- trust-boundary validation changes
+- **QA is required** before any non-trivial task moves to `Done`. Depth is
+  `Light`, `Standard`, or `Deep` by risk.
+- **Security is required only** when sensitive triggers apply (auth, permissions,
+  uploads, secrets, public exposure, sensitive data, trust-boundary changes).
+- **QA decides follow-up reviews**: after reviewing, QA records whether a
+  dedicated follow-up review task is needed, which agents must join, and why —
+  or why it was declined. Some triggers (e.g. schema changes → Database,
+  auth → Security) make a follow-up review mandatory. These rules live in
+  `05-agent-roles.md` (Review Governance) and are enforced by the validator.
 
 ### Validation
 
-Before moving a non-trivial task to `Done`, run:
+Before marking a non-trivial task `Done`:
 
 ```bash
 python scripts/validate_task_docs.py tasks/YYYY/MM/{task-id}-{task-name}/
 ```
 
-The validator:
+The validator checks required files, validates `qa.md` structure and review
+decisions, enforces the non-negotiable triggers in
+`.agents/config/review_rules.json`, and confirms any referenced follow-up review
+task exists. **Evolve the policy in `review_rules.json`**, not in the script —
+the script changes only when the document format itself changes.
 
-- checks that required task files exist
-- validates `qa.md` structure and review decisions
-- enforces non-negotiable review triggers from `.agents/config/review_rules.json`
-- confirms referenced follow-up review tasks exist
+---
 
-The policy should evolve mainly in `.agents/config/review_rules.json`. The Python script should change only when the document format or validation engine itself changes.
+## Token-efficiency design
 
-## Documentation Rules
+Low token usage is a first-class goal, built into the structure:
 
-Use:
+- **Modular + lazy-loaded protocol.** Only the always-on modules load each
+  session; niche modules load on demand.
+- **Delegation isolates heavy work.** Read-heavy or exploratory steps go to a
+  subagent, so file contents stay in the subagent's context and only the
+  conclusion returns to the main thread (`04-work-modes-activation.md`).
+- **Tiered models.** Light roles use haiku, implementation uses sonnet, critical
+  reasoning uses opus.
+- **Budget tiers.** Default is `Low` (max 3 context + 2 source files); escalate
+  only with a stated reason (`03-token-budget.md`).
+- **Read in layers.** Task file first, compact context next, source files last.
 
-- `tasks/` for execution, handoff, and review
-- `features/` for grouped feature-level tracking
-- `docs/` for reusable repository-wide references
-- `.agents/context/` for short operational context
+---
 
-Do not use `docs/` for active task logs or temporary handoff notes.
+## Templates
 
-## Included Templates
+- **Tasks:** `tasks/_templates/` — `task.md`, `modified_files.md`, `qa.md`,
+  `plan.md`, `handoff.md`
+- **Features:** `features/_templates/` — `plan.md`, `modified_files.md`,
+  `changes_current.md`, `qa.md`
 
-### Tasks
+Copy a template into a new task/feature folder rather than writing from scratch;
+the `qa.md` template matches what the validator expects.
 
-- `tasks/_templates/task.md`
-- `tasks/_templates/modified_files.md`
-- `tasks/_templates/handoff.md`
-- `tasks/_templates/plan.md`
-- `tasks/_templates/qa.md`
+---
 
-### Features
+## Using this in a new project
 
-- `features/_templates/modified_files.md`
-- `features/_templates/changes_current.md`
-- `features/_templates/plan.md`
-- `features/_templates/qa.md`
-
-## Claude Agent Roles
-
-Claude role files are available in:
-
-```text
-.claude/agents/
+1. Keep `.agents/`, `.claude/`, `scripts/`, the top-level `CLAUDE.md`/`AGENTS.md`,
+   and the `tasks/` + `features/` templates.
+2. Open Claude Code and run `/agents` to confirm the 13 subagents are registered.
+3. Point `tasks/active_task.md` at your first real task and start working with
+   minimal context.
+4. Adjust roles by editing the subagent files, and review policy by editing
+   `review_rules.json` — the protocol modules rarely need changing.
 ```
-
-Included roles:
-
-- `ai-integrations`
-- `architect`
-- `backend`
-- `database`
-- `data-analytics`
-- `devops`
-- `frontend-ui`
-- `machine-learning`
-- `qa`
-- `security`
-- `ux-operational`
-- `innovation`
-- `context-manager`
-
-These files specialize behavior by role. They do not replace the repository-wide protocol in `CLAUDE.md`.
-
-## Recommended Workflow
-
-1. Define or update `tasks/active_task.md`.
-2. Create a task folder if the work is non-trivial.
-3. Link the task to an existing feature, or create a feature only if it adds real tracking value.
-4. Work with minimal context.
-5. Move the task to `In Review` when implementation is complete.
-6. Run required `QA`, and `Security` only if risk triggers apply.
-7. Mark the task `Done` only after review and close-out updates.
-
-## Who This Is For
-
-This setup is useful when you want:
-
-- better AI coordination without heavy process
-- lower token usage
-- clearer handoffs
-- stronger review discipline
-- a practical structure for ongoing agent-assisted development
-
-## Current State
-
-This repository already includes:
-
-- a bootstrap feature example
-- a bootstrap task example
-- synchronized `AGENTS.md` and `CLAUDE.md`
-- reusable Claude agent definitions
-
-If you want to use this structure in a new project, start by opening the next real task in `tasks/active_task.md`.

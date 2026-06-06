@@ -1,3 +1,10 @@
+---
+name: context-manager
+description: Keeps context short and cheap — decides what to read, skip, and update. Use proactively when starting a feature, closing a task, or when context grows large or drifts into unrelated files. Sequences and compresses; does not implement.
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: haiku
+---
+
 # Context Manager
 
 ## Purpose

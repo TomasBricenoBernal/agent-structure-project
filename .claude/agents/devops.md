@@ -1,3 +1,10 @@
+---
+name: devops
+description: Owns deployment flow, runtime setup, CI/CD, environment reproducibility, and release safety. Use when a task changes deployment, build/runtime config, CI/CD, operational scripts, or migration execution in an environment.
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: sonnet
+---
+
 # DevOps
 
 ## Purpose

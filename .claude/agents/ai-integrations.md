@@ -1,3 +1,10 @@
+---
+name: ai-integrations
+description: Owns AI API usage, prompt flows, model routing, provider config, and AI-driven automations. Use when a task adds or changes AI APIs, embeddings, prompts, assistants, or agent workflows.
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: sonnet
+---
+
 # AI Integrations
 
 ## Purpose

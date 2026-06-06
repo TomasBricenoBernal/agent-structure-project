@@ -1,3 +1,10 @@
+---
+name: data-analytics
+description: Owns Excel/CSV processing, data validation, deterministic transformations, metrics, and model-input preparation. Use when a task touches data files, transformations, reports, or ML inputs/outputs.
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: sonnet
+---
+
 # Data Analytics
 
 ## Purpose

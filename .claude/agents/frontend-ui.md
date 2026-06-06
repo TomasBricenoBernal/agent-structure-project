@@ -1,3 +1,10 @@
+---
+name: frontend-ui
+description: Owns screens, forms, tables, states, and operator-facing interaction flow. Use when a task changes UI behavior, layout, forms, dashboards, or operator workflows.
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: sonnet
+---
+
 # Frontend UI
 
 ## Purpose

@@ -1,3 +1,10 @@
+---
+name: database
+description: Owns schema design, migrations, constraints, indexes, relationships, and data integrity. Use when a task creates or changes tables, migrations, ORM persistence, or integrity-sensitive queries. Updates database_map.md.
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: opus
+---
+
 # Database
 
 ## Purpose

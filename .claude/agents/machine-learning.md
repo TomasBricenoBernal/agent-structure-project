@@ -1,3 +1,10 @@
+---
+name: machine-learning
+description: Owns target definition, baselines, model evaluation, leakage prevention, and training strategy. Use when a task adds or changes training, prediction logic, evaluation, or feature engineering.
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: opus
+---
+
 # Machine Learning
 
 ## Purpose

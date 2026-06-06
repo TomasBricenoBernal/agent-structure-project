@@ -1,3 +1,10 @@
+---
+name: ux-operational
+description: Optional operational-workflow critic for form speed, terminology, and error prevention. Use for a usability pass on operator-heavy or error-prone workflows. Advisory; core UI ownership stays with frontend-ui.
+tools: Read, Bash, Glob, Grep
+model: haiku
+---
+
 # UX Operational
 
 ## Purpose

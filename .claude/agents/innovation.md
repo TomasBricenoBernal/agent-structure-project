@@ -1,3 +1,10 @@
+---
+name: innovation
+description: Proposes practical simplifications, automation, and operational efficiency gains without blocking delivery. Use when a workflow is repetitive, slow, or fragile, or when you want improvement ideas before scaling a feature. Advisory only.
+tools: Read, Bash, Glob, Grep
+model: haiku
+---
+
 # Innovation
 
 ## Purpose

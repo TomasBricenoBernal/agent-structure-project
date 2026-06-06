@@ -1,3 +1,10 @@
+---
+name: backend
+description: Implements APIs, services, validation, file-processing flow, business rules, and persistence integration. Use when a task changes backend behavior, routes, services, validators, or file-processing logic.
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: sonnet
+---
+
 # Backend
 
 ## Purpose
