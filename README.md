@@ -38,6 +38,7 @@ reusability, security, and low token usage.**
 ├── AGENTS.md                 # Generated: flattened protocol (for Codex / opencode)
 ├── README.md                 # This guide
 ├── .gitignore
+├── .githooks/                # Git hooks (pre-commit regenerates AGENTS.md)
 │
 ├── .agents/                  # Shared protocol — read by all tools via the index files
 │   ├── protocol/             # The protocol itself, split into modules (00–10)
@@ -87,6 +88,11 @@ python planning/scripts/build_agents.py
 
 `AGENTS.md` carries a "generated — do not edit by hand" header; edit the modules,
 not the flattened file.
+
+A committed **pre-commit hook** automates this. Once enabled (see *Using this in
+a new project*), it runs the build script and re-stages `AGENTS.md` on every
+commit, so the flattened file can never drift from the modules — you only edit
+`.agents/protocol/` and commit as usual.
 
 ### Protocol modules
 
@@ -267,11 +273,19 @@ the `qa.md` template matches what the validator expects.
 
 ## Using this in a new project
 
-1. Keep `.agents/`, `.claude/`, `planning/`, and the top-level
+1. Keep `.agents/`, `.claude/`, `.githooks/`, `planning/`, and the top-level
    `CLAUDE.md`/`AGENTS.md` (plus `.gitignore` and this `README.md`).
-2. Open Claude Code and run `/agents` to confirm the 13 subagents are registered.
-3. Point `planning/tasks/active_task.md` at your first real task and start working
+2. Enable the pre-commit hook so `AGENTS.md` regenerates automatically:
+
+   ```bash
+   git config core.hooksPath .githooks
+   ```
+
+3. Open Claude Code and run `/agents` to confirm the 13 subagents are registered.
+4. Point `planning/tasks/active_task.md` at your first real task and start working
    with minimal context.
-4. Adjust roles by editing the subagent files, and review policy by editing
-   `review_rules.json` — the protocol modules rarely need changing.
+5. Adjust roles by editing the subagent files, and review policy by editing
+   `review_rules.json` — the protocol modules rarely need changing. After editing
+   a module, the hook regenerates `AGENTS.md` for you (or run
+   `python planning/scripts/build_agents.py` manually).
 ```

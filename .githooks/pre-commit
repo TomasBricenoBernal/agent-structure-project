@@ -1,0 +1,23 @@
+#!/bin/sh
+# Keep AGENTS.md in sync with the protocol modules.
+#
+# AGENTS.md is generated from .agents/protocol/*.md (see
+# planning/scripts/build_agents.py). This hook regenerates it before each commit
+# and stages it if it changed, so the flattened protocol never drifts from the
+# source modules.
+#
+# Enable once per clone with:  git config core.hooksPath .githooks
+set -e
+
+if command -v python3 >/dev/null 2>&1; then
+  PY=python3
+else
+  PY=python
+fi
+
+"$PY" planning/scripts/build_agents.py >/dev/null
+
+if ! git diff --quiet -- AGENTS.md; then
+  git add AGENTS.md
+  echo "pre-commit: regenerated and staged AGENTS.md"
+fi
